@@ -1,6 +1,6 @@
 clc; clear all; close all;
 load('a22si');
-
+%load('OSteam');
 %% SET CONDITIONS
 WF_Ratio = 3;
 FA_Ratio = 1/16;
@@ -90,7 +90,7 @@ v_4_w = XSteam('v_pT',P_4/10^(5),T_4 - 273.15); %Note: in Celcius and Bars
 T_5 = T_max_engine;
 v_5_a = v_4_a;
 v_5_w = v_4_w;
-u_5_w = WTP_vT(v_5_w, T_5 - 273.15);
+u_5_w = OurSteam("Tv",T_5 - 273.15, v_5_w);
 
 
 
