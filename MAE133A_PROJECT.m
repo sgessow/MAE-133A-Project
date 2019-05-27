@@ -2,7 +2,7 @@ clc; clear all; close all;
 load('a22si');
 %load('OSteam');
 %% SET CONDITIONS
-WF_Ratio = 3;
+WF_Ratio = 2;
 FA_Ratio = 1/16;
 WA_Ratio = FA_Ratio*WF_Ratio;
 mdot_a = 1; %Kg/s
@@ -22,7 +22,7 @@ u_1 = IdealAir(T_1,'T','u');
 v_1= (R_a*T_1)/P_1;
 
 
-%% State 2 For Simple Cycle
+%% Simple Cycle
 Vr_2_Simple=Vr_1/r_simple;
 T_2_Simple = IdealAir(Vr_2_Simple,'vr','T');
 v_2_Simple = Vr_2_Simple/Vr_1 * v_1;
@@ -42,7 +42,7 @@ P_2 = (R_a*T_2)/v_2;
 %water conditions 
 P_i_w = P_2;
 T_i_w = T_atmosphere; %(Kelvin)
-u_i_w = XSteam('u_pt',P_i_w/10^(5),T_i_w - 273.155); %Note: in Celcius and Bars
+u_i_w = XSteam('u_pt',P_i_w/10^(5),T_i_w - 273.15); %Note: in Celcius and Bars
 mdot_w = mdot_a*WA_Ratio;
 
 %% State 3
@@ -91,11 +91,30 @@ r_new=v_1/v_4_a;
 
 %% State 5
 T_5 = T_max_engine;
+u_5_a=IdealAir(T_5,'T','u');
 v_5_a = v_4_a;
+Vr_5=(v_5_a/v_4_a)*Vr_4;
 v_5_w = v_4_w;
-u_5_w = OurSteam("Tv",T_5 - 273.15, v_5_w);
+u_5_w = OurSteam("Tvu",T_5 - 273.15, v_5_w);
+s_5_w = OurSteam("Tvs",T_5 - 273.15, v_5_w);
+u_5 = u_5_a*mdot_a + u_5_w*mdot_w;
+
+%% State 6
+v_6_a = v_1;
+Vr_6 = (v_6_a/v_5_a)*Vr_5;
+T_6=IdealAir(Vr_6,'vr','T')+273.15;
+u_6_a=IdealAir(T_6,'T','u');
+s_6_w=s_5_w;
+P_6=(R_a*T_6)/v_6_a;
+u_6_w=XSteam('u_ps',P_6/10^(5),s_5_w); %Note: in Celcius and Bars
+u_6 = u_6_a*mdot_a + u_6_w*mdot_w;
 
 
+%% Overall Outputs and Effeciencies
+W_net=(u_5-u_6)-((u_2-u_1)+(u_4-u_3));
+Q_in=(u_5-u_4);
+Effeciency=W_net/Q_inZA
+E_Comp=1-1/r_new^.4
 
 
 
