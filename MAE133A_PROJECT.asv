@@ -6,11 +6,11 @@ WF_Ratio = 3;
 FA_Ratio = 1/16;
 WA_Ratio = FA_Ratio*WF_Ratio;
 mdot_a = 1; %Kg/s
+T_auto_ignition = 8;
 T_atmosphere = 25 + 273.15;
 P_atmosphere = 1*10^(5); %(Pa)
 T_max_engine = 2000; %Can be 1500-2500 (Kelvin)
 R_a = 0.287; %(kJ/(kg*K))
-r_simple = 10;
 
 %% State 1
 % Asssumptions - intake is at atmospheric conditions and the cp
@@ -23,11 +23,10 @@ v_1= (R_a*T_1)/P_1;
 
 
 %% State 2 For Simple Cycle
-Vr_2_Simple=Vr_1/r_simple;
-T_2_Simple = IdealAir(Vr_2_Simple,'vr','T');
+T_2_Simple = T_auto_ignition; %(Kelvin)
+Vr_2_Simple = IdealAir(T_2_Simple,'T','vr');
 v_2_Simple = Vr_2_Simple/Vr_1 * v_1;
-T_auto_ignition=T_2_Simple;
-
+r_simple=v_1/v_2_Simple;
 
 %% State 2
 % assumptions: water injection conditions are P_2 and atmospheric
@@ -37,7 +36,7 @@ T_2 = T_auto_ignition;
 Vr_2 = IdealAir(T_2,'T','vr');
 v_2 = v_1*Vr_2/Vr_1;
 u_2 = IdealAir(T_2,'T','u');
-P_2 = (R_a*T_2)/v_2;
+P_2=(R_a*T_2)/v_2;
 
 %water conditions 
 P_i_w = P_2;
