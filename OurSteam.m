@@ -8,15 +8,8 @@ function Out=OurSteam(code,In1,In2)
         eror("Only Temperature specific volume is implemented")
     end
     Temperatures=Table(:,2);
-    T_max=max(Temperatures);
-    if In1>T_max
-        In1=T_max;
-    end
-    Temperatures=Table(:,2);
     volumes=Table(:,3);
     internal_energies=Table(:,4);
-    T_Low=-1;
-    T_High=-1;
     possible_volumes=[];
     for i =1:length(Temperatures)-1
          if (Temperatures(i)<In1 && In1<=Temperatures(i+1) && (Temperatures(i)-Temperatures(i+1))<300)
