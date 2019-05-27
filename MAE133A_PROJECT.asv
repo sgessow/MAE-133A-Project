@@ -20,7 +20,7 @@ T_1 = T_atmosphere; %(Kelvin)
 P_1 = P_atmosphere; %(Pa)
 Vr_1 = IdealAir(T_1,'T','vr');
 u_1 = IdealAir(T_1,'T','u');
-v_1 = (R_a*T_1)/P_1;
+v_1= (R_a*T_1)/P_1;
 
 
 %% Simple Cycle
@@ -103,16 +103,19 @@ u_5 = u_5_a*mdot_a + u_5_w*mdot_w;
 %% State 6
 v_6_a = v_1;
 Vr_6 = (v_6_a/v_5_a)*Vr_5;
-T_6 = IdealAir(Vr_6,'vr','T');
+T_6 = IdealAir(Vr_6,'vr','T')+273.15;
 u_6_a = IdealAir(T_6,'T','u');
 s_6_w = s_5_w;
 P_6 = (R_a*T_6)/v_6_a;
 u_6_w = XSteam('u_ps',P_6/10^(5),s_5_w); %Note: in Celcius and Bars
 u_6 = u_6_a*mdot_a + u_6_w*mdot_w;
 
+
 %% Overall Outputs and Effeciencies
 W_net = (u_5 - u_6) - ((u_2 - u_1) + (u_4 - u_3));
 Q_in = (u_5 - u_4);
 Effeciency = W_net/Q_in %Q_in2A initially
 E_Comp = 1 - 1/r_new^.4 
+
+
 
