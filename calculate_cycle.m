@@ -6,7 +6,6 @@ function Out=calculate_cycle(WF_Ratio,FA_Ratio, mdot_a)
     %mdot_a = 1; %Kg/s
     T_atmosphere = 25 + 273.15;
     P_atmosphere = 1*10^(5); %(Pa)
-    T_max_engine = 2000; %Can be 1500-2500 (Kelvin)
     R_a = 0.287; %(kJ/(kg*K))
     r_simple = 10;
     mdot_w = mdot_a*WA_Ratio;
@@ -92,7 +91,7 @@ function Out=calculate_cycle(WF_Ratio,FA_Ratio, mdot_a)
     %% State 5
     % T at 5 is from the temp of the burning fuel
     % v5 = v4 for both air and water
-    T_5 = T_max_engine;
+    T_5 = solve_T_5(T_4,mdot_a, FA_Ratio, WF_Ratio);
     u_5_a = IdealAir(T_5,'T','u');
     v_5_a = v_4_a;
     Vr_5=IdealAir(T_5,'T','vr');
@@ -106,7 +105,7 @@ function Out=calculate_cycle(WF_Ratio,FA_Ratio, mdot_a)
     %% State 6
     v_6_a=v_1;
     Vr_6=v_6_a/v_5_a*Vr_5;
-    T_6 = IdealAir(Vr_6,'vr','T')
+    T_6 = IdealAir(Vr_6,'vr','T');
     P_6=(R_a*T_6)/v_6_a*10^3;
     u_6_a=IdealAir(Vr_6,'vr','u');
     u_6_w=XSteam('u_pt',P_6/10^(5),T_6 - 273.15);

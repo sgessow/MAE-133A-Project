@@ -1,0 +1,64 @@
+Table=load('Ideal_Gasses');
+T_5=726;
+
+mdot_a=1;
+WF_Ratio = 1.6;
+FA_Ratio = 1/14.7;
+WA_Ratio = FA_Ratio*WF_Ratio;
+mdot_w=mdot_a*WA_Ratio;
+mdot_f=mdot_a*FA_Ratio;
+
+T=sym('T');
+a_w = 29.182;
+b_w = 14.503/1000;
+c_w = -2.0235/1000^(2);
+d_w = 0;
+cp_w = a_w + b_w*T + c_w*T^(2) + d_w*T^(3);
+hf_water=eval(-224.1820+int(cp_w,298,T_5)*10^-3);
+
+hf_octane=-208.450+(0.142075*T_5^2+123.165-49318.51)*10^-3;
+
+
+a_n=3.675;
+b_n=-1.208*10^-3;
+c_n=2.324*10^-6;
+d_n=-.632*10^-9;
+e_n=-.226*10^-12;
+cp_n=(8.314/28.02)*a_n+b_n*T+c_n*T^2+d_n*T^3+e_n*T^4;
+
+hf_nitrogen=eval(0+int(cp_n,298,T_5)*10^-3);
+
+a_co2=2.401;
+b_co2=8.735*10^-3;
+c_co2=-6.607*10^-6;
+d_co2=2.002*10^-9;
+e_co2=0;
+cp_co2=(8.314/44)*a_co2+b_co2*T+c_co2*T^2+d_co2*T^3+e_co2*T^4;
+
+hf_co2=eval(-393.52+int(cp_co2,298,T_5)*10^-3);
+
+a_o2=3.626;
+b_o2=-1.878*10^-3;
+c_o2=7.055*10^-6;
+d_o2=-6.764*10^-9;
+e_o2=2.156^10^-12;
+cp_o2=(8.314/32)*a_o2+b_o2*T+c_o2*T^2+d_o2*T^3+e_o2*T^4;
+
+hf_o2=eval(-393.52+int(cp_o2,298,T_5)*10^-3);
+
+%Notes on Table:
+%      C02       C0        H2O         O2          N2        
+% 1  2  3  4 | 5  6  7 | 8  9  10 | 11  12  13 | 14 15  16 | 17
+% T  h  u  s | h  u  s | h  u  s  | h   u   s  | h   u   s | T
+
+M_Octane=mdot_f*1/114.23*1000;
+M_O2=(8+18/4)*M_Octane;
+M_N2=3.76*(8+18/4)*M_Octane;
+M_H20_Gen=18/2*M_Octane;
+M_CO2=8*M_Octane;
+
+equation=M_Octane*(hf_octane+(0.142075*T^2+123.165-49318.51))+M_O2*(hf_o2+int(cp_o2,T_5,T))-M_CO2*(hf_co2+int(cp_co2,T_5,T))-M_H20_Gen*(hf_water+int(cp_w,T_5,T))==0;
+T_6_eqn=solve(equation,T);
+T_6 = eval(vpa(T_6_eqn(1)))
+
+
