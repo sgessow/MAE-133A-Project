@@ -16,10 +16,8 @@ function Out=calculate_cycle(WF_Ratio,FA_Ratio, mdot_a)
     T_1 = T_atmosphere; %(Kelvin)
     P_1 = P_atmosphere; %(Pa)
     Vr_1 = IdealAir(T_1,'T','vr');
-    u_1 = IdealAir(T_1,'T','u')+XSteam('u_pt',P_1/10^(5),T_1 - 273.15);
-    v_1 = ((R_a*T_1)/P_1)*10^3+XSteam('v_pT',P_1/10^(5),T_1 - 273.15)*mdot_w;
-
-
+    u_1 = IdealAir(T_1,'T','u');
+    v_1 = ((R_a*T_1)/P_1)*10^3;
 
     %% Simple Cycle
     Vr_2_Simple = Vr_1/r_simple;
@@ -72,42 +70,42 @@ function Out=calculate_cycle(WF_Ratio,FA_Ratio, mdot_a)
     u_o_w = XSteam('u_pt',P_o_w/10^(5),T_o_w - 273.15); %Note: in Celcius and Bars
     Vr_3 = IdealAir(T_3,'T','vr'); 
     P_3 = P_2; %constant Pressure assumption
-    v_3_a = (T_3*R_a)/P_3;
+    v_3_a = (T_3*R_a)/P_3*10^3;
     u_3_a = IdealAir(T_3,'T','u');
     s_o_w = XSteam('s_pt',P_o_w/10^(5),T_o_w - 273.15); %Note: in Celcius and Bars
     u_3 = u_3_a*mdot_a+u_o_w*mdot_w;
     %% State 4
     T_4 = T_auto_ignition;
     Vr_4 = IdealAir(T_4,'T','vr');
-    v_4_a = v_3_a * (Vr_4/Vr_3)*10^3;
+    v_4_a = v_3_a * (Vr_4/Vr_3);
     P_4 = (R_a*T_4)/v_4_a*10^3;
     u_4_a = IdealAir(T_4,'T','u');
     u_4_w = XSteam('u_ps',P_4/10^(5),s_o_w); %Note: in Celcius and Bars
     u_4 = u_4_a*mdot_a + u_4_w*mdot_w;
     v_4_w = XSteam('v_pT',P_4/10^(5),T_4 - 273.15)*mdot_w; %Note: in Celcius and Bars
-    v_4=v_4_w+v_4_a;
+    v_4=v_4_a-v_4_w;
     r_new = v_1/v_4_a;
 
     %% State 5
     T_5 = T_max_engine;
     u_5_a = IdealAir(T_5,'T','u');
     v_5_a = v_4_a;
-    Vr_5 = (v_5_a/v_4_a)*Vr_4;
+    Vr_5=IdealAir(T_5,'T','vr');
     v_5_w = v_4_w;
     u_5_w = OurSteam("Tvu",T_5 - 273.15, v_5_w/mdot_w);
     s_5_w = OurSteam("Tvs",T_5 - 273.15, v_5_w/mdot_w);
     u_5 = u_5_a*mdot_a + u_5_w*mdot_w;
     P_5 = (R_a*T_5)/v_5_a*10^3;
-    v_5=v_5_a+v_5_w;
+    v_5=v_5_a-v_5_w;
 
     %% State 6
-    v_6 = v_1;
-    steam_props_6=solve_v(v_5_a,Vr_5,s_5_w,v_6,mdot_a,mdot_w);
-    T_6=steam_props_6(2)
-    u_6_w=steam_props_6(4);
-    P_6=steam_props_6(1)
-    u_6_a = IdealAir(T_6,'T','u');
-    u_6=u_6_w*mdot_w+u_6_a*mdot_a;
+    v_6_a=v_1;%-XSteam('v_pt',P_1/10^(5),T_1 - 273.15);
+    Vr_6=v_6_a/v_5_a*Vr_5;
+    T_6 = IdealAir(Vr_6,'vr','T');
+    P_6=(R_a*T_6)/v_6_a*10^3;
+    u_6_a=IdealAir(Vr_6,'vr','u');
+    u_6_w=XSteam('u_pt',P_6/10^(5),T_6 - 273.15);
+    u_6=u_6_a*mdot_a+u_6_w*mdot_w;
 
     %% Overall Outputs and Effeciencies
     W_net = (u_5 - u_6) - ((u_2 - u_1) + (u_4 - u_3));

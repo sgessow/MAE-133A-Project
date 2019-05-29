@@ -61,7 +61,7 @@ function Out=solve_v(v_i_a,vr_i_a,s_w,v_total,m_dot_a,m_dot_w)
         v_water=Possible_Steam_Tables(i,3)*m_dot_w;
         vr_o_a=Possible_Air_Tables(i,5);
         v_air=(vr_o_a/vr_i_a)*v_i_a*m_dot_a;
-        v=v_air+v_water;
+        v=v_air;
         if abs(v-v_total)<.08
             %good_row=i;
             if abs((.287*Possible_Air_Tables(i,1))/v_air*10^-9-Possible_Steam_Tables(i,1))<10
