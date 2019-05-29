@@ -2,8 +2,8 @@ function Out=OurSteam(code,In1,In2)
     % code="Tv";
     % In1=2000;
     % In2=.1808;
-    Table=xlsread('Sup_Heated_Steam_Tables_For_Comp.xlsx');
-
+    %Table=xlsread('Sup_Heated_Steam_Tables_For_Comp.xlsx');
+    load('sup_steam.mat','Table');
     if code ~= "Tvu" && code ~= "Tvs"
         eror("Only Temperature specific volume is implemented")
     end

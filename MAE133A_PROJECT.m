@@ -1,5 +1,7 @@
 clc; clear all; close all;
 load('a22si');
+%Table=xlsread('Sup_Heated_Steam_Tables_For_Comp.xlsx');
+%save("MAE133A_PROJECT","Table")
 %load('OSteam');
 
 %% SET CONDITIONS
@@ -101,14 +103,13 @@ s_5_w = OurSteam("Tvs",T_5 - 273.15, v_5_w);
 u_5 = u_5_a*mdot_a + u_5_w*mdot_w;
 
 %% State 6
-v_6_a = v_1;
-Vr_6 = (v_6_a/v_5_a)*Vr_5;
-T_6 = IdealAir(Vr_6,'vr','T');
-u_6_a = IdealAir(T_6,'T','u');
-s_6_w = s_5_w;
-P_6 = (R_a*T_6)/v_6_a;
-u_6_w = XSteam('u_ps',P_6/10^(5),s_5_w); %Note: in Celcius and Bars
-u_6 = u_6_a*mdot_a + u_6_w*mdot_w;
+v_6 = v_1;
+steam_props_6=solve_v(v_5_a,Vr_5,s_5_w,v_1);
+T_6=steam_props_6(2);
+u_6_w=steam_props_6(4);
+P_6=steam
+
+
 
 %% Overall Outputs and Effeciencies
 W_net = (u_5 - u_6) - ((u_2 - u_1) + (u_4 - u_3));
